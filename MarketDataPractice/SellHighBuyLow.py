@@ -8,6 +8,7 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 import statistics as stat
+from sklearn.linear_model import LinearRegression
 
 from pandas_datareader import data
 from math import sqrt
@@ -35,7 +36,7 @@ def market_signal(google_data):
         price_points.append(row)
     return google_data_signal
 
-def visualize(google_data_signal):
+def visualize(google_data_signal, support, resistance):
     fig = plt.figure()
     ax1 = fig.add_subplot(111, ylabel='BTC-USD price in $')
     google_data_signal['price'].plot(ax=ax1, color='b', lw=2)
@@ -52,8 +53,11 @@ def init():
     local_min_max(price_points)
     print(local_min)
     print(local_max)
+    local_min_slope, local_min_int = regression_ceof(local_min)
+    local_max_slope, local_max_int = regression_ceof(local_max)
     #visualize data
-    visualize(google_data_signal)
+    #y=mx+b incorporates x as a series of financial data...
+    visualize(google_data_signal, support, resistance)
 
 #https://python.plainenglish.io/estimate-support-and-resistance-of-a-stock-with-python-beginner-algorithm-f1ae1508b66d 
 #tutorial on local min and max	
@@ -61,6 +65,14 @@ def pythag(pt1, pt2):
     a_sq = (pt2[0] - pt1[0]) ** 2
     b_sq = (pt2[1] - pt1[1]) ** 2
     return sqrt(a_sq + b_sq)
+
+def regression_ceof(pts):
+    X = np.array([pt[0] for pt in pts]).reshape(-1, 1)
+    y = np.array([pt[1] for pt in pts])
+    model = LinearRegression()
+    model.fit(X, y)
+    return model.coef_[0], model.intercept_
+
 
 def local_min_max(pts):
     global local_min
