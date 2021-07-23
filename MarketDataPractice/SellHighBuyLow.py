@@ -50,13 +50,8 @@ def init():
     google_data_signal = market_signal(google_data)
     #technical analysis generation
     local_min_max(price_points)
-    for element in local_min:
-        support.append((element[1]))
-    for element in local_max:
-        resistance.append((element[1]))  
-
-    print(support)
-    print(resistance) 
+    print(local_min)
+    print(local_max)
     #visualize data
     visualize(google_data_signal)
 
